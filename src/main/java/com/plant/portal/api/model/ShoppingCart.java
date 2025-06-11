@@ -42,7 +42,7 @@ public class ShoppingCart {
     private Plant plant; 
  
     @Column(nullable = false) 
-    private Integer quantity = 1; 
+    private Integer quantity = (Integer) 1;
  
     @CreationTimestamp 
     private LocalDateTime addedAt; 

@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.plant.portal.api.common.JwtTokenProvider;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.plant.portal.api.dto.request.AuthRequest;
@@ -33,9 +36,9 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserDetailsService, UserService { 
  
     private final UserRepository userRepository; 
-    private final PasswordEncoder passwordEncoder; 
-    private final JwtTokenProvider tokenProvider; 
-    private final ModelMapper modelMapper; 
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider tokenProvider;
+    private final ModelMapper modelMapper;
     private final PlantRepository plantRepository; 
  
  
@@ -59,21 +62,21 @@ public class UserServiceImpl implements UserDetailsService, UserService {
  
         User savedUser = userRepository.save(user); 
         return mapToResponse(savedUser); 
-    } 
- 
+    }
+
     // Authenticate user 
-    @Override 
-    public AuthResponse authenticateUser(AuthRequest authRequest) { 
-        User user = userRepository.findByUsernameOrEmail(authRequest.getUsernameOrEmail(), authRequest.getUsernameOrEmail()) 
-                .orElseThrow(() -> new UnauthorizedException("Invalid credentials")); 
- 
-        if (!passwordEncoder.matches(authRequest.getPassword(), user.getPasswordHash())) { 
-            throw new UnauthorizedException("Invalid credentials"); 
-        } 
- 
-        String token = tokenProvider.generateToken(UserPrincipal.create(user)); 
-        return new AuthResponse(token, mapToResponse(user)); 
-    } 
+    @Override
+    public AuthResponse authenticateUser(AuthRequest authRequest) {
+        User user = userRepository.findByUsernameOrEmail(authRequest.getUsernameOrEmail(), authRequest.getUsernameOrEmail())
+                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+
+        if (!passwordEncoder.matches(authRequest.getPassword(), user.getPasswordHash())) {
+            throw new UnauthorizedException("Invalid credentials");
+        }
+
+        String token = tokenProvider.generateToken(UserPrincipal.create(user));
+        return new AuthResponse(token, mapToResponse(user));
+    }
  
     // Get current user profile 
     @Override 
